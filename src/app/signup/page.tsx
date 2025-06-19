@@ -1,13 +1,13 @@
-// src/app/signup/page.tsx
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation'; // ✅ 追加
+import { useRouter } from 'next/navigation';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import Link from 'next/link'; // ✅ 追加
 
 export default function SignUpPage() {
-  const router = useRouter(); // ✅ 追加
+  const router = useRouter();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,7 +16,7 @@ export default function SignUpPage() {
   const handleSignUp = async () => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      router.push('/login'); // ✅ ユーザー登録完了後にログイン画面へ遷移
+      router.push('/login');
     } catch (err: any) {
       setError(err.message);
     }
@@ -43,10 +43,18 @@ export default function SignUpPage() {
         />
         <button
           onClick={handleSignUp}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 mb-2"
         >
           登録する
         </button>
+
+        {/* ✅ ログイン画面へ戻るリンク */}
+        <p className="text-sm text-center">
+          すでにアカウントをお持ちですか？{' '}
+          <Link href="/login" className="text-blue-600 hover:underline">
+            ログインはこちら
+          </Link>
+        </p>
       </div>
     </div>
   );
