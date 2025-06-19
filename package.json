@@ -1,0 +1,29 @@
+{
+  "name": "task-calendar-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "date-fns": "^3.6.0",
+    "firebase": "^11.9.1",
+    "next": "14.1.0",
+    "react": "18.2.0",
+    "react-big-calendar": "^1.19.4",
+    "react-dom": "18.2.0",
+    "recharts": "^2.15.3"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.21",
+    "@types/react-big-calendar": "^1.16.2",
+    "@types/react-dom": "^18.2.7",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.5",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.4.2"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "/login/page": "app/login/page.js",
+  "/calendar/page": "app/calendar/page.js",
+  "/task/list/page": "app/task/list/page.js",
+  "/task/[id]/page": "app/task/[id]/page.js",
+  "/task/new/page": "app/task/new/page.js"
+}
