@@ -22,6 +22,12 @@ type Task = {
   status: TaskStatus;
 };
 
+// JSTで日付文字列を取得する関数（YYYY-MM-DD形式）
+function toJSTDateKey(date: Date): string {
+  const jstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000); // UTC → JST
+  return jstDate.toISOString().split('T')[0];
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -54,7 +60,6 @@ export default function DashboardPage() {
       完了済み: 0,
     };
 
-    // start～end の期間すべての日付でカウント
     tasks.forEach((task) => {
       const start = task.start?.toDate();
       const end = task.end?.toDate();
@@ -62,7 +67,7 @@ export default function DashboardPage() {
 
       const current = new Date(start);
       while (current <= end) {
-        const dateKey = current.toISOString().split('T')[0]; // YYYY-MM-DD
+        const dateKey = toJSTDateKey(current); // JST基準で日付キー生成
         countsByDate[dateKey] = (countsByDate[dateKey] || 0) + 1;
         current.setDate(current.getDate() + 1);
       }
