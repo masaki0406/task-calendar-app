@@ -9,7 +9,7 @@ import {
   Views,
   View,
 } from 'react-big-calendar';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import {
   collection,
@@ -19,6 +19,7 @@ import {
 } from 'firebase/firestore';
 import CustomToolbar from '../../components/CustomToolbar';
 
+moment.tz.setDefault('Asia/Tokyo');
 const localizer = momentLocalizer(moment);
 
 type Task = {
@@ -57,8 +58,8 @@ export default function CalendarPage() {
         return {
           id: doc.id,
           title: data.title,
-          start: data.start.toDate(),
-          end: data.end.toDate(),
+          start: moment(data.start.toDate()).toDate(),
+          end: moment(data.end.toDate()).toDate(),
           createdBy: data.createdBy,
           isPublic: data.isPublic,
         } as Task;
@@ -90,8 +91,8 @@ export default function CalendarPage() {
         return {
           id: doc.id,
           title: data.title,
-          start: data.start.toDate(),
-          end: data.end.toDate(),
+          start: moment(data.start.toDate()).toDate(),
+          end: moment(data.end.toDate()).toDate(),
           createdBy: data.createdBy,
           isPublic: data.isPublic,
         } as Task;
@@ -170,7 +171,6 @@ export default function CalendarPage() {
         </div>
       </div>
 
-      {/* カスタムナビゲーションと表示切り替え */}
       <div className="flex gap-2 mb-4">
         <button onClick={() => navigateDate('prev')} className="px-3 py-1 bg-gray-200 rounded">
           前へ
