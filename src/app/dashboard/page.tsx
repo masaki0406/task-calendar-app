@@ -54,39 +54,30 @@ export default function DashboardPage() {
       完了済み: 0,
     };
 
+    // start～end の期間すべての日付でカウント
     tasks.forEach((task) => {
-      if (!task.start || !task.end) return;
+      const start = task.start?.toDate();
+      const end = task.end?.toDate();
+      if (!start || !end) return;
 
-      const startDate = task.start.toDate();
-      const endDate = task.end.toDate();
-      const current = new Date(startDate);
-
-      // 期間中すべての日付に対してカウントする
-      while (current <= endDate) {
-        const dateKey = current.toLocaleDateString('ja-JP', {
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-        }).replace(/\//g, '-');
-
+      const current = new Date(start);
+      while (current <= end) {
+        const dateKey = current.toISOString().split('T')[0]; // YYYY-MM-DD
         countsByDate[dateKey] = (countsByDate[dateKey] || 0) + 1;
         current.setDate(current.getDate() + 1);
       }
 
-      // ステータスごとのカウント
       if (task.status in statusCounter) {
         statusCounter[task.status]++;
       }
     });
 
-    // 日付順にソートしてセット
-    setDailyCounts(
-      Object.entries(countsByDate)
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([date, count]) => ({ date, count }))
+    const sortedDates = Object.entries(countsByDate).sort(([a], [b]) =>
+      a.localeCompare(b)
     );
 
-    // ステータスカウントのセット
+    setDailyCounts(sortedDates.map(([date, count]) => ({ date, count })));
+
     setStatusCounts(
       (Object.entries(statusCounter) as [TaskStatus, number][]).map(([status, count]) => ({
         status,
@@ -109,9 +100,23 @@ export default function DashboardPage() {
 
       <section className="mb-10">
         <h2 className="text-lg font-semibold mb-2">📅 タスク件数（日別）</h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={dailyCounts}>
-            <XAxis dataKey="date" angle={-45} textAnchor="end" interval={0} />
+        <ResponsiveContainer width="100%" height={320}>
+          <BarChart data={dailyCounts} margin={{ top: 20, right: 30, left: 20, bottom: 50 }}>
+            <XAxis
+              dataKey="date"
+              interval={0}
+              tick={({ x, y, payload }) => (
+                <text
+                  x={x}
+                  y={y + 15}
+                  textAnchor="end"
+                  transform={`rotate(-30, ${x}, ${y + 15})`}
+                  fontSize={12}
+                >
+                  {payload.value}
+                </text>
+              )}
+            />
             <YAxis allowDecimals={false} />
             <Tooltip />
             <Bar dataKey="count" fill="#3b82f6" />
