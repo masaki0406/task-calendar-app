@@ -12,12 +12,14 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { eachDayOfInterval } from 'date-fns'; // ✅ 追加
 
 type TaskStatus = '未対応' | '処理中' | '処理済み' | '完了済み';
 
 type Task = {
   title: string;
   start?: any;
+  end?: any;
   status: TaskStatus;
 };
 
@@ -54,17 +56,17 @@ export default function DashboardPage() {
     };
 
     tasks.forEach((task) => {
-      const rawDate = task.start?.toDate();
-      const dateKey = rawDate
-        ? rawDate.toLocaleDateString('ja-JP', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-      }).replace(/\//g, '-') // オプション：YYYY-MM-DD形式に整える
-  : '';
-      if (dateKey) {
-        countsByDate[dateKey] = (countsByDate[dateKey] || 0) + 1;
+      const startDate = task.start?.toDate();
+      const endDate = task.end?.toDate() || startDate;
+
+      if (startDate && endDate) {
+        const daysInRange = eachDayOfInterval({ start: startDate, end: endDate });
+        daysInRange.forEach((day) => {
+          const dateKey = day.toISOString().split('T')[0]; // YYYY-MM-DD形式
+          countsByDate[dateKey] = (countsByDate[dateKey] || 0) + 1;
+        });
       }
+
       if (task.status in statusCounter) {
         statusCounter[task.status as TaskStatus]++;
       }
