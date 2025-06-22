@@ -5,6 +5,13 @@ import { useRouter } from 'next/navigation';
 import { auth, db } from '@/lib/firebase';
 import { addDoc, collection, getDocs, query, orderBy, limit } from 'firebase/firestore';
 
+// JST変換関数
+const toJSTDate = (input: string) => {
+  const utcDate = new Date(input);
+  const jstOffset = 9 * 60 * 60 * 1000;
+  return new Date(utcDate.getTime() - utcDate.getTimezoneOffset() * 60000 + jstOffset);
+};
+
 export default function NewTaskPage() {
   const router = useRouter();
   const [title, setTitle] = useState('');
@@ -40,7 +47,10 @@ export default function NewTaskPage() {
       return;
     }
 
-    if (new Date(start) > new Date(end)) {
+    const startDate = toJSTDate(start);
+    const endDate = toJSTDate(end);
+
+    if (startDate > endDate) {
       alert('開始日は終了日より前にしてください');
       return;
     }
@@ -54,8 +64,8 @@ export default function NewTaskPage() {
         tag,
         assignee,
         status,
-        start: new Date(start),
-        end: new Date(end),
+        start: startDate,
+        end: endDate,
         createdBy: auth.currentUser.uid,
         taskNumber,
       });
