@@ -12,7 +12,6 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { eachDayOfInterval } from 'date-fns'; // ✅ 追加
 
 type TaskStatus = '未対応' | '処理中' | '処理済み' | '完了済み';
 
@@ -56,26 +55,38 @@ export default function DashboardPage() {
     };
 
     tasks.forEach((task) => {
-      const startDate = task.start?.toDate();
-      const endDate = task.end?.toDate() || startDate;
+      if (!task.start || !task.end) return;
 
-      if (startDate && endDate) {
-        const daysInRange = eachDayOfInterval({ start: startDate, end: endDate });
-        daysInRange.forEach((day) => {
-          const dateKey = day.toISOString().split('T')[0]; // YYYY-MM-DD形式
-          countsByDate[dateKey] = (countsByDate[dateKey] || 0) + 1;
-        });
+      const startDate = task.start.toDate();
+      const endDate = task.end.toDate();
+      const current = new Date(startDate);
+
+      // 期間中すべての日付に対してカウントする
+      while (current <= endDate) {
+        const dateKey = current.toLocaleDateString('ja-JP', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        }).replace(/\//g, '-');
+
+        countsByDate[dateKey] = (countsByDate[dateKey] || 0) + 1;
+        current.setDate(current.getDate() + 1);
       }
 
+      // ステータスごとのカウント
       if (task.status in statusCounter) {
-        statusCounter[task.status as TaskStatus]++;
+        statusCounter[task.status]++;
       }
     });
 
+    // 日付順にソートしてセット
     setDailyCounts(
-      Object.entries(countsByDate).map(([date, count]) => ({ date, count }))
+      Object.entries(countsByDate)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([date, count]) => ({ date, count }))
     );
 
+    // ステータスカウントのセット
     setStatusCounts(
       (Object.entries(statusCounter) as [TaskStatus, number][]).map(([status, count]) => ({
         status,
@@ -100,7 +111,7 @@ export default function DashboardPage() {
         <h2 className="text-lg font-semibold mb-2">📅 タスク件数（日別）</h2>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={dailyCounts}>
-            <XAxis dataKey="date" />
+            <XAxis dataKey="date" angle={-45} textAnchor="end" interval={0} />
             <YAxis allowDecimals={false} />
             <Tooltip />
             <Bar dataKey="count" fill="#3b82f6" />
