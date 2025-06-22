@@ -66,6 +66,12 @@ export default function TaskDetailPage() {
     setError('');
   };
 
+  const formatToJSTString = (datetime: string) => {
+    if (!datetime) return '-';
+    const date = new Date(datetime);
+    return date.toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' });
+  };
+
   if (!task) {
     return <div className="p-6">読み込み中...</div>;
   }
@@ -162,7 +168,7 @@ export default function TaskDetailPage() {
               className="border p-2 rounded w-full"
             />
           ) : (
-            <p>{startDate ? new Date(startDate).toLocaleString() : '-'}</p>
+            <p>{formatToJSTString(startDate)}</p>
           )}
         </div>
 
@@ -176,7 +182,7 @@ export default function TaskDetailPage() {
               className="border p-2 rounded w-full"
             />
           ) : (
-            <p>{dueDate ? new Date(dueDate).toLocaleString() : '-'}</p>
+            <p>{formatToJSTString(dueDate)}</p>
           )}
         </div>
 
