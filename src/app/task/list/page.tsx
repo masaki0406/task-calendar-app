@@ -26,11 +26,16 @@ export default function TaskListPage() {
     dueDate?: any;
   };
 
+  // JST日数差計算
   const calculateDelay = (endDate: any, status: string) => {
     if (!endDate || status === '完了済み') return '-';
+
+    const jstNow = new Date(new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' }));
     const end = endDate.toDate();
-    const today = new Date();
-    const diff = Math.ceil((today.getTime() - end.getTime()) / (1000 * 60 * 60 * 24));
+
+    const diff = Math.ceil(
+      (jstNow.getTime() - end.getTime()) / (1000 * 60 * 60 * 24)
+    );
     return diff > 0 ? diff : '-';
   };
 
@@ -172,10 +177,14 @@ export default function TaskListPage() {
               <td className="border p-2">{task.assignee}</td>
               <td className="border p-2">{task.status}</td>
               <td className="border p-2">
-                {task.startDate ? task.startDate.toDate().toLocaleDateString() : '-'}
+                {task.startDate
+                  ? task.startDate.toDate().toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo' })
+                  : '-'}
               </td>
               <td className="border p-2">
-                {task.endDate ? task.endDate.toDate().toLocaleDateString() : '-'}
+                {task.endDate
+                  ? task.endDate.toDate().toLocaleDateString('ja-JP', { timeZone: 'Asia/Tokyo' })
+                  : '-'}
               </td>
               <td className="border p-2 text-center">
                 {calculateDelay(task.endDate, task.status)}
