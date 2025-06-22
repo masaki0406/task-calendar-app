@@ -54,7 +54,14 @@ export default function DashboardPage() {
     };
 
     tasks.forEach((task) => {
-      const dateKey = task.start?.toDate().toISOString().split('T')[0];
+      const rawDate = task.start?.toDate();
+      const dateKey = rawDate
+        ? rawDate.toLocaleDateString('ja-JP', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      }).replace(/\//g, '-') // オプション：YYYY-MM-DD形式に整える
+  : '';
       if (dateKey) {
         countsByDate[dateKey] = (countsByDate[dateKey] || 0) + 1;
       }
